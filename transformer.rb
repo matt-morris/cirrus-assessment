@@ -39,8 +39,32 @@ class Transformer
   private
 
   def parse_date(date)
-    Date.parse(date).iso8601
-  rescue
+    [
+      "%m-%d-%y",
+      "%m/%d/%y",
+      "%m-%d-%Y",
+      "%m/%d/%Y",
+      "%m-%d-%y",
+      "%m/%d/%y",
+      "%d-%m-%y",
+      "%d/%m/%y",
+      "%d-%m-%Y",
+      "%d/%m/%Y",
+      "%Y-%m-%d",
+      "%d-%m-%Y",
+      "%Y/%m/%d",
+      "%d/%m/%Y",
+      "%B %d, %Y",
+      "%b %d, %Y",
+      "%d %B, %Y",
+      "%d %b, %Y"
+    ].each do |format|
+      return Date.parse(date, format).iso8601
+    rescue ArgumentError
+      next
+    rescue
+      nil
+    end
     nil
   end
 end
