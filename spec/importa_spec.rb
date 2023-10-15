@@ -59,4 +59,16 @@ RSpec.describe Importa do
     output = Transformer.transform_batch(input)
     expect(output).to eq(expected)
   end
+
+  it "reports on invalid records" do
+    input = [
+      {"first_name" => "John", "last_name" => "Doe", "dob" => "01/01/2000", "member_id" => "123", "effective_date" => "01/01/2020", "expiry_date" => "01/01/2021", "phone_number" => "(303) 555-4202)"},
+      {"first_name" => "Jane", "last_name" => "Doe", "dob" => "01/01/2000", "member_id" => "123", "effective_date" => "01/01/2020", "expiry_date" => "01/01/2021", "phone_number" => "(303) 555-4202)"},
+      {"first_name" => "Jill", "last_name" => "Doe", "dob" => "", "member_id" => "123", "effective_date" => "01/01/2020", "expiry_date" => "01/01/2021", "phone_number" => "(303) 555-4202)"}
+    ]
+    reporter = Importa::Reporter.new
+    Transformer.transform_batch(input, reporter)
+    expect(reporter.transformed_records).to eq(2)
+    expect(reporter.invalid_records).to eq([{row: 2, errors: [[:dob, "is required"]]}])
+  end
 end
