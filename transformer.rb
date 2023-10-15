@@ -1,6 +1,6 @@
-require_relative "base_transformer"
+require_relative "lib/importa"
 
-class Transformer < BaseTransformer
+class Transformer < Importa::BaseTransformer
   def first_name
     @row["first_name"]&.strip
   end
