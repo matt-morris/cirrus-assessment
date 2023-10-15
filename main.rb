@@ -1,7 +1,8 @@
 require "csv"
 require "date"
 
-input = CSV.read("input.csv", headers: true)
+file = File.read("input.csv").sub!("\xEF\xBB\xBF", "")
+input = CSV.parse(file, headers: true)
 
 class Transformer
   def initialize(row)
