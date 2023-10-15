@@ -31,14 +31,16 @@ class Transformer
   end
 
   def phone_number
-    @row["phone_number"].gsub(/\D/, "")
-  rescue
-    nil
+    parse_phone_number(@row["phone_number"])
   end
 
   private
 
-  def parse_date(date)
+  def parse_phone_number(value)
+    cleaned_value = value.to_s.gsub(/\D/, "").sub(/^1/, "")
+    (cleaned_value.length == 10) ? "+1#{cleaned_value}" : nil
+  end
+
     [
       "%m-%d-%y",
       "%m/%d/%y",
