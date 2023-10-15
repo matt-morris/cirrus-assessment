@@ -38,4 +38,12 @@ RSpec.describe Importa do
   it "strips whitespace from stings" do
     expect(Transformer.new({"first_name" => " John "}).first_name).to eq("John")
   end
+
+  it "formats a date as ISO-8601" do
+    expect(Transformer.new({"dob" => "01/01/2000"}).dob).to eq(Date.new(2000, 1, 1).iso8601)
+  end
+
+  it "formats a phone number as E.164" do
+    expect(Transformer.new({"phone_number" => "(303) 555-4202)"}).phone_number).to eq("+13035554202")
+  end
 end
