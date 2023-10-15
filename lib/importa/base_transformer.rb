@@ -3,6 +3,7 @@
 module Importa
   class BaseTransformer
     attr_reader :input, :output, :errors
+    attr_accessor :reporter
     @field_names = []
     @formatters = {}
 
@@ -100,15 +101,25 @@ module Importa
     def transform
       @errors = []
       @run_at = Time.now
-      self.class.field_names.map do |name|
+      results = self.class.field_names.map do |name|
         send("field_#{name}")
       end
+      valid? ? reporter&.record_transformed : reporter&.record_invalid(@row_number, @errors)
+
+      results
     end
 
-    def self.transform_batch(input)
-      input.map.with_index do |row, index|
-        new(row, index).transform
+    def self.transform_batch(input, reporter = nil)
+      reporter ||= Reporter.new
+      results = []
+      input.each.with_index do |row, index|
+        t = new(row, index)
+        t.reporter = reporter
+        row = t.transform
+        results.push(row) if t.valid?
       end
+      reporter.report
+      results
     end
   end
 end
