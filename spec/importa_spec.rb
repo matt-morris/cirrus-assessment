@@ -71,4 +71,56 @@ RSpec.describe Importa do
     expect(reporter.transformed_records).to eq(2)
     expect(reporter.invalid_records).to eq([{row: 2, errors: [[:dob, "is required"]]}])
   end
+
+  describe "date formatter" do
+    it "accepts a date in the format MM/DD/YYYY" do
+      expect(Transformer.new({"dob" => "01/01/2000"})["dob"]).to eq(Date.new(2000, 1, 1).iso8601)
+    end
+
+    it "accepts a date in the format YYYY-MM-DD" do
+      expect(Transformer.new({"dob" => "2000-01-01"})["dob"]).to eq(Date.new(2000, 1, 1).iso8601)
+    end
+
+    it "accepts a date in the format m-d-yy" do
+      expect(Transformer.new({"dob" => "1-1-00"})["dob"]).to eq(Date.new(2000, 1, 1).iso8601)
+    end
+
+    it "accepts a date in the format m-d-yyyy" do
+      expect(Transformer.new({"dob" => "1-1-2000"})["dob"]).to eq(Date.new(2000, 1, 1).iso8601)
+    end
+  end
+
+  describe "phone formatter" do
+    it "accepts a phone number in the format (###) ###-####" do
+      expect(Transformer.new({"phone_number" => "(303) 555-4202)"})["phone_number"]).to eq("+13035554202")
+    end
+
+    it "accepts a phone number in the format ###-###-####" do
+      expect(Transformer.new({"phone_number" => "303-555-4202)"})["phone_number"]).to eq("+13035554202")
+    end
+
+    it "accepts a phone number in the format ### ### ####" do
+      expect(Transformer.new({"phone_number" => "303 555 4202)"})["phone_number"]).to eq("+13035554202")
+    end
+
+    it "accepts a phone number in the format ##########" do
+      expect(Transformer.new({"phone_number" => "3035554202)"})["phone_number"]).to eq("+13035554202")
+    end
+
+    it "accepts a phone number in the format ###.###.####" do
+      expect(Transformer.new({"phone_number" => "303.555.4202)"})["phone_number"]).to eq("+13035554202")
+    end
+
+    it "rejects a phone number in the format ###-###-####x####" do
+      expect(Transformer.new({"phone_number" => "303-555-4202x1234)"})["phone_number"]).to be_nil
+    end
+
+    it "rejects a phone number in the format ###-###-#### ext ####" do
+      expect(Transformer.new({"phone_number" => "303-555-4202 ext 1234)"})["phone_number"]).to be_nil
+    end
+
+    it "rejects phone numbers that are too short" do
+      expect(Transformer.new({"phone_number" => "555-4202)"})["phone_number"]).to be_nil
+    end
+  end
 end
