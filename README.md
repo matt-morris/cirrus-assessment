@@ -19,7 +19,7 @@ bundle exec rspec
 The transformer DSL I ended up with is pretty clean. I'm proud of this. It's probably overkill for a single file, but this gives a taste of how I would approach a larger project. Custom transformers can be quickly created using the `BaseTransformer`. It comes with a set of built-in formatters, but custom formatters can be added as well:
 
 ```ruby
-class MyTransformer < BaseTransformer
+class MyTransformer < Importa::BaseTransformer
   # Custom formatters
   format :shout, ->(value) { value.to_s.upcase }
   
@@ -30,7 +30,7 @@ end
 If you don't need to make an entire new format, it's easy to augment a single field by passing it a block:
 
 ```ruby
-class MyTransformer < BaseTransformer
+class MyTransformer < Importa::BaseTransformer
   field :hello do |value|
     value.to_s.upcase
   end
