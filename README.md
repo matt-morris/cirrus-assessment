@@ -1,5 +1,44 @@
 # Goal
 
+## Usage
+
+```bash
+ruby main.rb
+```
+
+This will output `output.csv` and `report.txt` in the root directory.
+
+## Tests
+
+```bash
+bundle exec rspec
+```
+
+## Notes
+
+The transformer DSL I ended up with is pretty clean. I'm proud of this. It's probably overkill for a single file, but this gives a taste of how I would approach a larger project. Custom transformers can be quickly created using the `BaseTransformer`. It comes with a set of built-in formatters, but custom formatters can be added as well:
+
+```ruby
+class MyTransformer < BaseTransformer
+  # Custom formatters
+  format :shout, ->(value) { value.to_s.upcase }
+  
+  field :hello, :shout
+end
+```
+
+If you don't need to make an entire new format, it's easy to augment a single field by passing it a block:
+
+```ruby
+class MyTransformer < BaseTransformer
+  field :hello do |value|
+    value.to_s.upcase
+  end
+end
+```
+
+---
+
 Write a Ruby program that transforms raw data into a standardized format. The objective is to provide a valid .csv which allows the highest number of valid patient records
 to be imported by the next stage of the process (not seen here). Some of the data will be invalid so there will be 2 output
 files from your program, one of which will be the .csv and the other a report.txt file.
